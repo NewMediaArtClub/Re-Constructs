@@ -2,72 +2,98 @@
 <html>
 <head>
     <title>Field Work 3: A Structured Arena</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background: #111;
-            font-family: Arial, sans-serif;
-        }
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        background: #111;
+        font-family: Arial, sans-serif;
+    }
 
-        #canvas {
-            width: 100vw;
-            height: 100vh;
-        }
+    #canvas {
+        width: 100vw;
+        height: 100vh;
+    }
 
+    .controls {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 15px;
+        border-radius: 8px;
+        color: white;
+        z-index: 10;
+    }
+
+    .controls label {
+        display: block;
+        margin: 10px 0;
+    }
+
+    .controls input {
+        margin-left: 10px;
+        width: 120px;
+    }
+
+    .controls .action-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .controls button {
+        margin-top: 10px;
+        padding: 8px 12px;
+        background: #007bff;
+        border: none;
+        border-radius: 4px;
+        color: white;
+        cursor: pointer;
+    }
+
+    .controls button:hover {
+        background: #0056b3;
+    }
+
+    .info {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        color: white;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 15px;
+        border-radius: 8px;
+        max-width: 300px;
+        z-index: 10;
+    }
+
+    @media (max-width: 768px) {
         .controls {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px;
-            border-radius: 8px;
-            color: white; /* fixed */
-            z-index: 10;
+            top: 10px;
+            left: 10px;
+            padding: 20px;
         }
 
-        .controls label {
-            display: block;
-            margin: 10px 0;
-        }
-
-        .controls input {
-            margin-left: 10px;
-            width: 120px;
-        }
-
-        .controls .action-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+        .controls input[type="range"] {
+            transform: scale(1.15);
+            transform-origin: left center;
         }
 
         .controls button {
-            margin-top: 10px;
-            padding: 8px 12px;
-            background: #007bff;
-            border: none;
-            border-radius: 4px;
-            color: white; /* fixed */
-            cursor: pointer;
-        }
-
-        .controls button:hover {
-            background: #0056b3;
+            padding: 10px 14px;
+            font-size: 1.05em;
         }
 
         .info {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            color: white; /* fixed */
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px;
-            border-radius: 8px;
-            max-width: 300px;
-            z-index: 10;
+            bottom: 10px;
+            left: 10px;
+            padding: 20px;
+            font-size: 1.05em;
         }
-    </style>
+    }
+</style>
+
 </head>
 <body>
     <canvas id="canvas"></canvas>
