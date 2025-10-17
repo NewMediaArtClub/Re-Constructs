@@ -1,228 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>ART1 Web Implementation</title>
-    <style>
-        body {
-            font-family: monospace;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #f0f0f0;
-        }
-        .container {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 20px;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .controls {
-            background: #f8f8f8;
-            padding: 15px;
-            border-radius: 4px;
-        }
-        .canvas-container { position: relative; }
-        #artCanvas {
-            font-family: monospace;
-            white-space: pre;
-            background: white;
-            padding: 10px;
-            border: 1px solid #ccc;
-            min-height: 500px;
-            width: 100%;
-            resize: none;
-        }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        select, input, button {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        button { background: #007bff; color: white; border: none; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        h1 { color: #333; text-align: center; margin-bottom: 30px; }
-        .info {
-            background: #e9ecef;
-            padding: 10px;
-            border-radius: 4px;
-            margin-top: 10px;
-            font-size: 0.9em;
-        }
-        /* optional: make the two buttons sit side by side */
-        .action-row { display: flex; gap: 10px; flex-wrap: wrap; }
-        .action-row button { width: auto; }
-    </style>
+<meta charset="UTF-8">
+<title>ART1 Web Implementation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    * { box-sizing: border-box; }
+    body {
+        font-family: monospace;
+        margin: 0;
+        padding: 10px;
+        background: #f0f0f0;
+    }
+    h1 {
+        color: #333;
+        text-align: center;
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+    }
+    .container {
+        display: flex;
+        flex-direction: column;
+        background: white;
+        padding: 10px;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .controls {
+        background: #f8f8f8;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 10px;
+    }
+    .form-group {
+        margin-bottom: 10px;
+    }
+    label {
+        display: block;
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+    }
+    select, input, button {
+        width: 100%;
+        padding: 8px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    button {
+        background: #007bff;
+        color: white;
+        border: none;
+        margin-bottom: 8px;
+    }
+    button:hover {
+        background: #0056b3;
+    }
+    #artCanvas {
+        font-family: monospace;
+        white-space: pre;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 100%;
+        height: 60vh;
+        overflow: auto;
+        padding: 8px;
+        resize: none;
+        font-size: 0.8rem;
+    }
+    .info {
+        background: #e9ecef;
+        padding: 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        text-align: center;
+    }
+    @media (min-width: 768px) {
+        .container { flex-direction: row; gap: 20px; }
+        .controls { width: 300px; }
+        #artCanvas { height: 500px; font-size: 0.9rem; }
+    }
+</style>
 </head>
 <body>
-    <h1>ART1 Web Implementation</h1>
-    <div class="container">
-        <div class="controls">
-            <div class="form-group">
-                <label for="shape">Shape:</label>
-                <select id="shape">
-                    <option value="line">Line</option>
-                    <option value="rectangle">Rectangle</option>
-                    <option value="triangle">Triangle</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="character">Character:</label>
-                <input type="text" id="character" maxlength="1" value="*">
-            </div>
-            <div class="form-group">
-                <label for="startRow">Start Row:</label>
-                <input type="number" id="startRow" min="0" max="49" value="0">
-            </div>
-            <div class="form-group">
-                <label for="startCol">Start Column:</label>
-                <input type="number" id="startCol" min="0" max="104" value="0">
-            </div>
-            <div class="form-group">
-                <label for="size">Size:</label>
-                <input type="number" id="size" min="1" max="20" value="5">
-            </div>
-            <button onclick="addShape()">Add Shape</button>
-            <button onclick="clearCanvas()" style="background: #dc3545;">Clear Canvas</button>
-            <div class="info">
-                Canvas size: 50x105 characters
-                <br>
-                Inspired by the original ART1 system (1970)
-            </div>
+<h1>ART1 Web Implementation</h1>
+<div class="container">
+    <div class="controls">
+        <div class="form-group">
+            <label for="shape">Shape</label>
+            <select id="shape">
+                <option value="line">Line</option>
+                <option value="rectangle">Rectangle</option>
+                <option value="triangle">Triangle</option>
+            </select>
         </div>
-        <div class="canvas-container">
-            <textarea id="artCanvas" readonly></textarea>
-            <div class="action-row" style="margin-top: 10px;">
-                <button onclick="downloadAsImage()">Download as PNG</button>
-                <!-- NEW: open museum text in popup -->
-                <button onclick="openMuseumText()" aria-label="Open museum text panel">Open museum text</button>
-            </div>
-            <canvas id="downloadCanvas" style="display:none;"></canvas>
+        <div class="form-group">
+            <label for="character">Character</label>
+            <input type="text" id="character" maxlength="1" value="*">
+        </div>
+        <div class="form-group">
+            <label for="startRow">Start Row</label>
+            <input type="number" id="startRow" min="0" max="49" value="0">
+        </div>
+        <div class="form-group">
+            <label for="startCol">Start Column</label>
+            <input type="number" id="startCol" min="0" max="104" value="0">
+        </div>
+        <div class="form-group">
+            <label for="size">Size</label>
+            <input type="number" id="size" min="1" max="20" value="5">
+        </div>
+        <button onclick="addShape()">Add Shape</button>
+        <button onclick="clearCanvas()" style="background:#dc3545;">Clear Canvas</button>
+        <button onclick="downloadPNG()" style="background:#28a745;">Download PNG</button>
+        <div class="info">
+            Canvas size: 50x105 characters<br>Inspired by the original ART1 system (1970)
         </div>
     </div>
+    <textarea id="artCanvas" readonly></textarea>
+</div>
+<script>
+const ROWS = 50;
+const COLS = 105;
+let canvas = Array(ROWS).fill().map(()=>Array(COLS).fill(' '));
 
-    <script>
-        const ROWS = 50;
-        const COLS = 105;
-        let canvas = Array(ROWS).fill().map(() => Array(COLS).fill(' '));
-
-        function updateCanvas() {
-            const display = canvas.map(row => row.join('')).join('\n');
-            document.getElementById('artCanvas').value = display;
+function updateCanvas(){
+    document.getElementById('artCanvas').value = canvas.map(r=>r.join('')).join('\n');
+}
+function clearCanvas(){
+    canvas = Array(ROWS).fill().map(()=>Array(COLS).fill(' '));
+    updateCanvas();
+}
+function drawLine(r,c,s,ch){
+    for(let i=0;i<s&&c+i<COLS;i++){if(r>=0&&r<ROWS&&c+i>=0){canvas[r][c+i]=ch;}}
+}
+function drawRectangle(r,c,s,ch){
+    for(let i=0;i<s&&r+i<ROWS;i++){for(let j=0;j<s&&c+j<COLS;j++){if(r+i>=0&&c+j>=0){canvas[r+i][c+j]=ch;}}}
+}
+function drawTriangle(r,c,s,ch){
+    for(let i=0;i<s&&r+i<ROWS;i++){
+        const w=(i*2)+1;const off=Math.floor(w/2);
+        for(let j=0;j<w&&c+j-off<COLS;j++){
+            if(r+i>=0&&c+j-off>=0){canvas[r+i][c+j-off]=ch;}
         }
+    }
+}
+function addShape(){
+    const shape=document.getElementById('shape').value;
+    const ch=document.getElementById('character').value||'*';
+    const r=parseInt(document.getElementById('startRow').value)||0;
+    const c=parseInt(document.getElementById('startCol').value)||0;
+    const s=parseInt(document.getElementById('size').value)||5;
+    if(shape==='line')drawLine(r,c,s,ch);
+    if(shape==='rectangle')drawRectangle(r,c,s,ch);
+    if(shape==='triangle')drawTriangle(r,c,s,ch);
+    updateCanvas();
+}
 
-        function clearCanvas() {
-            canvas = Array(ROWS).fill().map(() => Array(COLS).fill(' '));
-            updateCanvas();
-        }
+function downloadPNG() {
+    const text = document.getElementById('artCanvas').value;
+    const lines = text.split('\n');
+    const fontSize = 14;
+    const lineHeight = 18;
+    const padding = 10;
+    const width = Math.max(...lines.map(l => l.length)) * fontSize * 0.6 + padding * 2;
+    const height = lines.length * lineHeight + padding * 2;
 
-        function drawLine(startRow, startCol, size, char) {
-            for(let i = 0; i < size && startCol + i < COLS; i++) {
-                if(startRow >= 0 && startRow < ROWS && startCol + i >= 0 && startCol + i < COLS) {
-                    canvas[startRow][startCol + i] = char;
-                }
-            }
-        }
+    const canvasEl = document.createElement('canvas');
+    canvasEl.width = width;
+    canvasEl.height = height;
+    const ctx = canvasEl.getContext('2d');
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, width, height);
+    ctx.font = `${fontSize}px monospace`;
+    ctx.fillStyle = 'black';
 
-        function drawRectangle(startRow, startCol, size, char) {
-            for(let i = 0; i < size && startRow + i < ROWS; i++) {
-                for(let j = 0; j < size && startCol + j < COLS; j++) {
-                    if(startRow + i >= 0 && startCol + j >= 0) {
-                        canvas[startRow + i][startCol + j] = char;
-                    }
-                }
-            }
-        }
+    lines.forEach((line, i) => {
+        ctx.fillText(line, padding, padding + i * lineHeight);
+    });
 
-        function drawTriangle(startRow, startCol, size, char) {
-            for(let i = 0; i < size && startRow + i < ROWS; i++) {
-                const width = (i * 2) + 1;
-                const offset = Math.floor(width / 2);
-                for(let j = 0; j < width && startCol + j - offset < COLS; j++) {
-                    if(startRow + i >= 0 && startCol + j - offset >= 0) {
-                        canvas[startRow + i][startCol + j - offset] = char;
-                    }
-                }
-            }
-        }
+    const link = document.createElement('a');
+    link.download = 'art1.png';
+    link.href = canvasEl.toDataURL('image/png');
+    link.click();
+}
 
-        function addShape() {
-            const shape = document.getElementById('shape').value;
-            const char = document.getElementById('character').value || '*';
-            const startRow = parseInt(document.getElementById('startRow').value) || 0;
-            const startCol = parseInt(document.getElementById('startCol').value) || 0;
-            const size = parseInt(document.getElementById('size').value) || 5;
-
-            switch(shape) {
-                case 'line':
-                    drawLine(startRow, startCol, size, char);
-                    break;
-                case 'rectangle':
-                    drawRectangle(startRow, startCol, size, char);
-                    break;
-                case 'triangle':
-                    drawTriangle(startRow, startCol, size, char);
-                    break;
-            }
-            updateCanvas();
-        }
-
-        function downloadAsImage() {
-            const canvasElement = document.getElementById('downloadCanvas');
-            const ctx = canvasElement.getContext('2d');
-            const artText = document.getElementById('artCanvas').value;
-            const lines = artText.split('\n');
-
-            const charWidth = 10;
-            const charHeight = 16;
-            const width = COLS * charWidth;
-            const height = ROWS * charHeight;
-
-            canvasElement.width = width;
-            canvasElement.height = height;
-
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, width, height);
-            ctx.fillStyle = '#000000';
-            ctx.font = `${charHeight}px monospace`;
-            ctx.textBaseline = 'top';
-
-            for (let i = 0; i < lines.length; i++) {
-                ctx.fillText(lines[i], 0, i * charHeight);
-            }
-
-            const link = document.createElement('a');
-            link.download = 'artwork.png';
-            link.href = canvasElement.toDataURL('image/png');
-            link.click();
-        }
-
-        // NEW: popup opener
-        function openMuseumText() {
-            const url = 'art1text.html'; // put this file next to this page
-          
-            const w = Math.min(900, window.screen.width - 100);
-            const h = Math.min(700, window.screen.height - 100);
-            const left = Math.max(0, Math.round((window.screen.width - w) / 2));
-            const top = Math.max(0, Math.round((window.screen.height - h) / 2));
-            const features = `popup=yes,scrollbars=yes,resizable=yes,width=${w},height=${h},left=${left},top=${top}`;
-            const win = window.open(url, 'ART1TextPanel', features);
-            if (!win) {
-                // fallback if blocked
-                window.open(url, '_blank');
-            } else {
-                win.focus();
-            }
-        }
-
-        // Initialise canvas
-        updateCanvas();
-    </script>
+updateCanvas();
+</script>
 </body>
 </html>
+
